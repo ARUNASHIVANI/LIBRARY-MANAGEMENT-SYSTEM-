@@ -1,0 +1,155 @@
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+
+class Book {
+    private int id;
+    private String title;
+    private boolean isIssued;
+
+    public Book(int id, String title) {
+        this.id = id;
+        this.title = title;
+        this.isIssued = false;
+    }
+
+    public int getId() {
+        return id;
+    }
+public String getTitle() {
+        return title;
+    }
+
+    public boolean isIssued() {
+        return isIssued;
+    }
+
+    public void issueBook() {
+        isIssued = true;
+    }
+
+    public void returnBook() {
+        isIssued = false;
+    }
+}
+
+public class LibraryManagementSystem extends JFrame {
+    private ArrayList<Book> books = new ArrayList<>();
+    private JTextArea displayArea;
+
+    public LibraryManagementSystem() {
+        setTitle("Library Management System");
+        setSize(600, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+ // Create Buttons
+        JButton addBookButton = new JButton("Add Book");
+        JButton viewBooksButton = new JButton("View Books");
+        JButton issueBookButton = new JButton("Issue Book");
+        JButton returnBookButton = new JButton("Return Book");
+
+        // Create Text Area for Display
+        displayArea = new JTextArea();
+        displayArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(displayArea);
+
+        // Add buttons to the top panel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 4));
+        buttonPanel.add(addBookButton);
+        buttonPanel.add(viewBooksButton);
+        buttonPanel.add(issueBookButton);
+        buttonPanel.add(returnBookButton);
+
+        // Add components to the frame
+        add(buttonPanel, BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Action Listeners for Buttons
+        addBookButton.addActionListener(e -> addBook());
+        viewBooksButton.addActionListener(e -> viewBooks());
+        issueBookButton.addActionListener(e -> issueBook());
+        returnBookButton.addActionListener(e -> returnBook());
+    }
+
+ private void addBook() {
+        try {
+            String idStr = JOptionPane.showInputDialog(this, "Enter Book ID:");
+            String title = JOptionPane.showInputDialog(this, "Enter Book Title:");
+
+            if (idStr != null && title != null) {
+                int id = Integer.parseInt(idStr);
+                books.add(new Book(id, title));
+                JOptionPane.showMessageDialog(this, "Book added successfully!");
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid ID. Please enter a number.");
+        }
+    }
+
+    private void viewBooks() {
+        StringBuilder bookList = new StringBuilder("Books in Library:\n");
+        for (Book book : books) {
+            bookList.append("ID: ").append(book.getId())
+                    .append(", Title: ").append(book.getTitle())
+                    .append(book.isIssued() ? " (Issued)" : " (Available)")
+                    .append("\n");
+        }
+        displayArea.setText(bookList.toString());
+    }
+
+ private void issueBook() {
+        try {
+            String idStr = JOptionPane.showInputDialog(this, "Enter Book ID to Issue:");
+            if (idStr != null) {
+                int id = Integer.parseInt(idStr);
+                for (Book book : books) {
+                    if (book.getId() == id) {
+                        if (!book.isIssued()) {
+                            book.issueBook();
+                            JOptionPane.showMessageDialog(this, "Book issued successfully!");
+                            return;
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Book is already issued.");
+                            return;
+                        }
+                    }
+                }
+                JOptionPane.showMessageDialog(this, "Book not found.");
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid ID. Please enter a number.");
+        }
+    }
+
+private void returnBook() {
+        try {
+            String idStr = JOptionPane.showInputDialog(this, "Enter Book ID to Return:");
+            if (idStr != null) {
+                int id = Integer.parseInt(idStr);
+                for (Book book : books) {
+                    if (book.getId() == id) {
+                        if (book.isIssued()) {
+                            book.returnBook();
+                            JOptionPane.showMessageDialog(this, "Book returned successfully!");
+                            return;
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Book is not issued.");
+                            return;
+                        }
+                    }
+                }
+                JOptionPane.showMessageDialog(this, "Book not found.");
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid ID. Please enter a number.");
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            LibraryManagementSystem frame = new LibraryManagementSystem();
+            frame.setVisible(true);
+        });
+    }
+}
